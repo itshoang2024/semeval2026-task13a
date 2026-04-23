@@ -4,10 +4,10 @@ inherits_from: configs/global.yaml
 # --- Kaggle path overrides ---
 # Must include ALL path keys since load_config() does shallow dict.update()
 paths:
-  train: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/train.parquet
-  validation: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/validation.parquet
-  test: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/test.parquet
-  sample_submission: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/sample_submission.csv
+  train: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/train.parquet
+  validation: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/validation.parquet
+  test: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/test.parquet
+  sample_submission: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/sample_submission.csv
   processed_train: data/processed/train_clean.parquet
   processed_val: data/processed/val_clean.parquet
   processed_test: data/processed/test_clean.parquet
