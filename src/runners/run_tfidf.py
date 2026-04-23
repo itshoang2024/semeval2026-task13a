@@ -1,5 +1,7 @@
 """TF-IDF + LogReg runner (Run 1)."""
 
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 
@@ -9,15 +11,36 @@ from src.utils.metrics import compute_metrics
 from src.utils.io import save_json
 
 
+def _load_data(paths: dict, logger) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Load processed data if available, otherwise fall back to raw + preprocess."""
+    processed = {
+        "train": paths.get("processed_train"),
+        "val": paths.get("processed_val"),
+        "test": paths.get("processed_test"),
+    }
+
+    if all(v and Path(v).exists() for v in processed.values()):
+        logger.info("Loading pre-processed data from data/processed/")
+        train_df = pd.read_parquet(processed["train"])
+        val_df = pd.read_parquet(processed["val"])
+        test_df = pd.read_parquet(processed["test"])
+    else:
+        logger.info("Processed data not found — loading raw and preprocessing")
+        train_df, val_df, test_df = load_raw_data(
+            paths["train"], paths["test"], paths.get("validation")
+        )
+        train_df = preprocess_dataframe(train_df)
+        val_df = preprocess_dataframe(val_df)
+        test_df = preprocess_dataframe(test_df)
+
+    return train_df, val_df, test_df
+
+
 def run_tfidf(cfg: dict, logger):
     paths = cfg["paths"]
     output_dir = cfg["output"]["dir"]
 
-    # Load data (parquet)
-    train_df, val_df, test_df = load_raw_data(paths["train"], paths["test"], paths.get("validation"))
-    train_df = preprocess_dataframe(train_df)
-    val_df = preprocess_dataframe(val_df)
-    test_df = preprocess_dataframe(test_df)
+    train_df, val_df, test_df = _load_data(paths, logger)
     logger.info(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
 
     text_col = cfg["data"]["text_column"]

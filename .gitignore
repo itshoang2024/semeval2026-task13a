@@ -5,8 +5,8 @@ data/features/
 data/splits/
 
 # Run outputs
-runs/*/
-!runs/.gitkeep
+# runs/*/
+# !runs/.gitkeep
 
 # Model checkpoints
 *.pt

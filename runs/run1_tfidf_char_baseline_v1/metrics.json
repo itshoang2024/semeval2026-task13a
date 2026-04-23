@@ -1,0 +1,11 @@
+{
+  "run_name": "run1_tfidf_char_baseline_v1",
+  "validation": {
+    "random": {
+      "macro_f1": 0.9316460742293364,
+      "accuracy": 0.93169,
+      "precision_macro": 0.931593102510049,
+      "recall_macro": 0.9325031299768581
+    }
+  }
+}
