@@ -66,27 +66,43 @@ def run_transformer(cfg: dict, logger):
 
     for epoch in range(train_cfg["epochs"]):
         model.train()
-        total_loss = 0
+        total_loss = 0.0
         optimizer.zero_grad()
 
         for step, batch in enumerate(train_loader):
             batch = {k: v.to(device) for k, v in batch.items()}
+            should_step = ((step + 1) % grad_accum == 0) or ((step + 1) == len(train_loader))
 
             if scaler:
                 with torch.amp.autocast("cuda"):
                     out = model(**batch)
                 loss = out["loss"] / grad_accum
                 scaler.scale(loss).backward()
-                if (step + 1) % grad_accum == 0:
-                    scaler.step(optimizer)
+
+                optimizer_stepped = False
+                if should_step:
+                    old_scale = scaler.get_scale()
+                    scaler.step(optimizer)   # may be skipped internally if grads overflow
                     scaler.update()
+                    new_scale = scaler.get_scale()
+
                     optimizer.zero_grad()
-                    scheduler.step()
+
+                    # Only step the scheduler if optimizer.step() actually happened
+                    if new_scale >= old_scale:
+                        scheduler.step()
+                        optimizer_stepped = True
+
+                # Optional debug
+                # if should_step:
+                #     logger.info(f"AMP step={step} old_scale={old_scale} new_scale={new_scale} stepped={optimizer_stepped}")
+
             else:
                 out = model(**batch)
                 loss = out["loss"] / grad_accum
                 loss.backward()
-                if (step + 1) % grad_accum == 0:
+
+                if should_step:
                     optimizer.step()
                     optimizer.zero_grad()
                     scheduler.step()
