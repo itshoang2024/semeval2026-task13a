@@ -10,11 +10,14 @@ paths:
   test: data/raw/test.parquet
   sample_submission: data/raw/sample_submission.csv
   processed_train: data/processed/train_clean.parquet
+  processed_val: data/processed/val_clean.parquet
   processed_test: data/processed/test_clean.parquet
   features_train: data/features/handcrafted_train.parquet
+  features_val: data/features/handcrafted_val.parquet
   features_test: data/features/handcrafted_test.parquet
 
 splits:
+  holdout: data/splits/holdout_v1.json
   random: data/splits/random_stratified_v1.json
   proxy_ood_language: data/splits/lolo_language_v1.json
   proxy_ood_style: data/splits/length_style_bins_v1.json

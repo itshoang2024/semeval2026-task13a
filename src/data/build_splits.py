@@ -5,18 +5,54 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 
-def build_random_stratified(df: pd.DataFrame, label_col: str = "label", n_splits: int = 10, seed: int = 42) -> dict:
+def _composite_stratify_key(df: pd.DataFrame, label_col: str, lang_col: str) -> pd.Series:
+    """Create a composite stratification key from label × language."""
+    return df[label_col].astype(str) + "_" + df[lang_col].astype(str)
+
+
+def build_random_stratified(
+    df: pd.DataFrame,
+    label_col: str = "label",
+    lang_col: str = "language",
+    n_splits: int = 10,
+    seed: int = 42,
+) -> dict:
+    """K-fold stratified by label × language to preserve both proportions."""
+    strat_key = _composite_stratify_key(df, label_col, lang_col)
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     splits = {}
-    for fold, (train_idx, val_idx) in enumerate(skf.split(df, df[label_col])):
+    for fold, (train_idx, val_idx) in enumerate(skf.split(df, strat_key)):
         splits[f"fold_{fold}"] = {
             "train": train_idx.tolist(),
             "val": val_idx.tolist(),
         }
     return splits
+
+
+def build_holdout_split(
+    df: pd.DataFrame,
+    label_col: str = "label",
+    lang_col: str = "language",
+    val_size: float = 0.1,
+    seed: int = 42,
+) -> dict:
+    """Single train/val split stratified by label × language."""
+    strat_key = _composite_stratify_key(df, label_col, lang_col)
+    train_idx, val_idx = train_test_split(
+        np.arange(len(df)),
+        test_size=val_size,
+        stratify=strat_key,
+        random_state=seed,
+    )
+    return {
+        "holdout": {
+            "train": train_idx.tolist(),
+            "val": val_idx.tolist(),
+        }
+    }
 
 
 def build_lolo_language(df: pd.DataFrame, lang_col: str = "language") -> dict:
