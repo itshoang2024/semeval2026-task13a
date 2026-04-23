@@ -1,0 +1,50 @@
+run_name: run5_hybrid_unixcoder_catboost_v1
+inherits_from: configs/global.yaml
+
+stage1_neural:
+  backbone: microsoft/unixcoder-base
+  architecture: cls_classifier
+  num_labels: 2
+  max_length: 512
+  batch_size: 16
+  grad_accum_steps: 2
+  epochs: 3
+  lr: 2.0e-5
+  weight_decay: 0.01
+  scheduler: linear
+  warmup_ratio: 0.1
+  mixed_precision: true
+
+stage2_features:
+  use_handcrafted_features: true
+  feature_groups:
+    - stylometric
+    - structural
+    - ast_lite
+
+meta_model:
+  type: catboost
+  depth: 6
+  learning_rate: 0.05
+  iterations: 1000
+  eval_metric: Logloss
+  early_stopping_rounds: 100
+
+fusion:
+  inputs:
+    - neural_prob_human
+    - neural_prob_ai
+    - handcrafted_features
+
+validation:
+  schemes:
+    - random
+    - proxy_ood_language
+    - proxy_ood_style
+
+output:
+  dir: runs/run5_hybrid_unixcoder_catboost_v1
+  save_oof: true
+  save_submission: true
+  save_feature_importance: true
+  save_shap_summary: true

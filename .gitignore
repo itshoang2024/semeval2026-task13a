@@ -1,0 +1,54 @@
+# Data
+data/raw/
+data/processed/
+data/features/
+data/splits/
+
+# Run outputs
+runs/*/
+!runs/.gitkeep
+
+# Model checkpoints
+*.pt
+*.bin
+*.ckpt
+*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+wandb/
+
+# Large files
+*.parquet
+*.npy
+*.npz
+*.h5
+*.hdf5
+docs/*.pdf
+docs/prompt-pack/

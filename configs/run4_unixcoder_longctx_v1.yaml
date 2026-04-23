@@ -1,0 +1,44 @@
+run_name: run4_unixcoder_longctx_v1
+inherits_from: configs/global.yaml
+
+model:
+  backbone: microsoft/unixcoder-base
+  architecture: cls_classifier
+  num_labels: 2
+  max_length: 512
+  pooling: cls
+  long_context:
+    strategy: head_tail
+    head_tokens: 256
+    tail_tokens: 256
+
+data:
+  text_column: code
+  label_column: label
+  use_comments: true
+  normalize_whitespace: false
+  remove_docstrings: false
+
+train:
+  batch_size: 16
+  grad_accum_steps: 2
+  epochs: 3
+  optimizer: adamw
+  lr: 2.0e-5
+  weight_decay: 0.01
+  scheduler: linear
+  warmup_ratio: 0.1
+  mixed_precision: true
+  sampler: balanced
+
+validation:
+  schemes:
+    - random
+    - proxy_ood_language
+    - proxy_ood_style
+
+output:
+  dir: runs/run4_unixcoder_longctx_v1
+  save_oof: true
+  save_submission: true
+  save_logits: true

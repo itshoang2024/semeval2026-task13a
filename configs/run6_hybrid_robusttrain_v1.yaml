@@ -1,0 +1,49 @@
+run_name: run6_hybrid_robusttrain_v1
+inherits_from: configs/global.yaml
+
+stage1_neural:
+  backbone: microsoft/unixcoder-base
+  architecture: cls_classifier
+  num_labels: 2
+  max_length: 512
+  batch_size: 16
+  grad_accum_steps: 2
+  epochs: 3
+  lr: 2.0e-5
+  weight_decay: 0.01
+  scheduler: linear
+  warmup_ratio: 0.1
+  mixed_precision: true
+
+  # Robust training additions
+  loss: focal
+  focal_gamma: 2.0
+  sampler: group_balanced
+  sampler_groups: language
+  class_weight: balanced
+
+stage2_features:
+  use_handcrafted_features: true
+  feature_groups:
+    - stylometric
+    - structural
+    - ast_lite
+
+meta_model:
+  type: catboost
+  depth: 6
+  learning_rate: 0.05
+  iterations: 1000
+  eval_metric: Logloss
+  early_stopping_rounds: 100
+
+validation:
+  schemes:
+    - random
+    - proxy_ood_language
+    - proxy_ood_style
+
+output:
+  dir: runs/run6_hybrid_robusttrain_v1
+  save_oof: true
+  save_submission: false

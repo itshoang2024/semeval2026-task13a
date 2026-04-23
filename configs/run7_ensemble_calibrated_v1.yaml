@@ -1,0 +1,36 @@
+run_name: run7_ensemble_calibrated_v1
+inherits_from: configs/global.yaml
+
+ensemble:
+  models:
+    - name: run3_unixcoder_cls_v1
+      oof_path: runs/run3_unixcoder_cls_v1/oof.csv
+      weight: 0.20
+    - name: run4_unixcoder_longctx_v1
+      oof_path: runs/run4_unixcoder_longctx_v1/oof.csv
+      weight: 0.25
+    - name: run5_hybrid_unixcoder_catboost_v1
+      oof_path: runs/run5_hybrid_unixcoder_catboost_v1/oof.csv
+      weight: 0.30
+    - name: run6_hybrid_robusttrain_v1
+      oof_path: runs/run6_hybrid_robusttrain_v1/oof.csv
+      weight: 0.25
+
+  method: soft_vote
+  weight_search: true
+  weight_search_step: 0.05
+
+calibration:
+  threshold_search_step: 0.01
+  per_length_bin: false
+
+validation:
+  schemes:
+    - random
+    - proxy_ood_language
+    - proxy_ood_style
+
+output:
+  dir: runs/run7_ensemble_calibrated_v1
+  save_submission: true
+  save_weights: true
