@@ -86,11 +86,9 @@ class HeadTailCodeDataset(Dataset):
             ])
 
             attention_mask = torch.ones(self.max_length, dtype=torch.long)
-            token_type_ids = torch.zeros(self.max_length, dtype=torch.long)
             encoding = {
                 "input_ids": combined,
                 "attention_mask": attention_mask,
-                "token_type_ids": token_type_ids,
             }
 
         item = {k: v.squeeze(0) if v.dim() > 1 else v for k, v in encoding.items()}
