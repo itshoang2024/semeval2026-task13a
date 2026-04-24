@@ -1,12 +1,6 @@
-# Data folders
-data/raw/
-data/processed/
-data/features/
-data/splits/
-
-# Run outputs
-# runs/*/
-# !runs/.gitkeep
+# DVC-tracked directories
+/data
+/runs
 
 # Model checkpoints
 *.pt
