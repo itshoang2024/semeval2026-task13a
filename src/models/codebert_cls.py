@@ -13,8 +13,8 @@ class CodeClassifier(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.classifier = nn.Linear(hidden_size, num_labels)
 
-    def forward(self, input_ids, attention_mask, labels=None):
-        outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
+    def forward(self, input_ids, attention_mask, token_type_ids=None, labels=None):
+        outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
         pooled = outputs.last_hidden_state[:, 0, :]  # CLS token
         pooled = self.dropout(pooled)
         logits = self.classifier(pooled)

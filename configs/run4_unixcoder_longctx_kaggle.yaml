@@ -1,0 +1,58 @@
+run_name: run4_unixcoder_longctx_kaggle
+inherits_from: configs/global.yaml
+
+# --- Kaggle path overrides ---
+# Must include ALL path keys since load_config() does shallow dict.update()
+paths:
+  train: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/train.parquet
+  validation: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/validation.parquet
+  test: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/test.parquet
+  sample_submission: /kaggle/input/competitions/sem-eval-2026-task-13-subtask-a/Task_A/sample_submission.csv
+  processed_train: data/processed/train_clean.parquet
+  processed_val: data/processed/val_clean.parquet
+  processed_test: data/processed/test_clean.parquet
+  features_train: data/features/handcrafted_train.parquet
+  features_val: data/features/handcrafted_val.parquet
+  features_test: data/features/handcrafted_test.parquet
+
+model:
+  backbone: microsoft/unixcoder-base
+  architecture: cls_classifier
+  num_labels: 2
+  max_length: 512
+  pooling: cls
+  long_context:
+    strategy: head_tail
+    head_tokens: 256
+    tail_tokens: 256
+
+data:
+  text_column: code
+  label_column: label
+  use_comments: true
+  normalize_whitespace: false
+  remove_docstrings: false
+
+train:
+  batch_size: 16
+  grad_accum_steps: 2
+  epochs: 2
+  optimizer: adamw
+  lr: 2.0e-5
+  weight_decay: 0.01
+  scheduler: linear
+  warmup_ratio: 0.1
+  mixed_precision: true
+  sampler: balanced
+
+validation:
+  schemes:
+    - random
+    - proxy_ood_language
+    - proxy_ood_style
+
+output:
+  dir: runs/run4_unixcoder_longctx_kaggle
+  save_oof: true
+  save_submission: true
+  save_logits: true
