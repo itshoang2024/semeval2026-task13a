@@ -2,8 +2,9 @@
 
 from pathlib import Path
 
-import pandas as pd
+import joblib
 import numpy as np
+import pandas as pd
 
 from src.models.tfidf_lr import build_tfidf_lr_pipeline, predict_proba
 from src.data.preprocess import load_raw_data, preprocess_dataframe
@@ -39,6 +40,7 @@ def _load_data(paths: dict, logger) -> tuple[pd.DataFrame, pd.DataFrame, pd.Data
 def run_tfidf(cfg: dict, logger):
     paths = cfg["paths"]
     output_dir = cfg["output"]["dir"]
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     train_df, val_df, test_df = _load_data(paths, logger)
     logger.info(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
@@ -64,6 +66,10 @@ def run_tfidf(cfg: dict, logger):
 
     pipeline.fit(X_train, y_train)
     logger.info("Training complete")
+
+    model_path = Path(output_dir) / "model.joblib"
+    joblib.dump(pipeline, model_path)
+    logger.info(f"Saved model pipeline to {model_path}")
 
     # Validate
     val_probs = predict_proba(pipeline, X_val)

@@ -31,3 +31,5 @@ tree-sitter>=0.22
 
 # Reproducibility
 jsonlines>=4.0
+dvc
+dvc-http
